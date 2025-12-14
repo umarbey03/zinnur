@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ZIN-NUR | Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gray-900 text-white flex min-h-screen">
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="flex-1 p-8 space-y-8">
+      <!-- HEADER -->
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+        <button
+          onclick="logout()"
+          class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+        >
+          Logout
+        </button>
+      </div>
+
+      <!-- ===== SECTIONS ===== -->
+
+      <!-- ADD USER -->
+      <section id="section-add-user" class="admin-section">
+        <h2 class="text-xl font-semibold mb-4">Add User</h2>
+
+        <div class="bg-gray-800 p-6 rounded-lg max-w-lg space-y-3">
+          <input
+            id="phone"
+            class="w-full p-2 text-black rounded"
+            placeholder="998901234567"
+          />
+          <input
+            id="code"
+            class="w-full p-2 text-black rounded"
+            placeholder="Login code"
+          />
+          <select id="role" class="w-full p-2 text-black rounded">
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+          </select>
+
+          <button
+            onclick="createUser()"
+            class="bg-blue-600 hover:bg-blue-700 w-full py-2 rounded"
+          >
+            Create User
+          </button>
+        </div>
+      </section>
+
+      <!-- ADD COURSE -->
+      <section id="section-courses" class="admin-section hidden">
+        <h2 class="text-xl font-semibold mb-4">Courses</h2>
+
+        <div class="bg-gray-800 p-6 rounded-lg max-w-xl space-y-3">
+          <input
+            id="courseTitle"
+            class="w-full p-2 text-black rounded"
+            placeholder="Course title"
+          />
+          <textarea
+            id="courseDesc"
+            class="w-full p-2 text-black rounded"
+            placeholder="Course description"
+          ></textarea>
+
+          <button
+            onclick="createCourse()"
+            class="bg-green-600 hover:bg-green-700 w-full py-2 rounded"
+          >
+            Create Course
+          </button>
+        </div>
+
+        <ul id="courseList" class="mt-6 space-y-2 text-sm"></ul>
+      </section>
+
+      <!-- ADD LESSON -->
+      <section id="section-lessons" class="admin-section hidden">
+        <h2 class="text-xl font-semibold mb-4">Lessons</h2>
+
+        <div class="bg-gray-800 p-6 rounded-lg max-w-xl space-y-3">
+          <select
+            id="lessonCourse"
+            class="w-full p-2 text-black rounded"
+          ></select>
+          <input
+            id="lessonTitle"
+            class="w-full p-2 text-black rounded"
+            placeholder="Lesson title"
+          />
+          <input
+            id="youtubeId"
+            class="w-full p-2 text-black rounded"
+            placeholder="YouTube video ID"
+          />
+          <input
+            id="pdfUrl"
+            class="w-full p-2 text-black rounded"
+            placeholder="PDF link (optional)"
+          />
+          <textarea
+            id="lessonDesc"
+            class="w-full p-2 text-black rounded"
+            placeholder="Lesson description"
+          ></textarea>
+
+          <button
+            onclick="createLesson()"
+            class="bg-blue-600 hover:bg-blue-700 w-full py-2 rounded"
+          >
+            Add Lesson
+          </button>
+        </div>
+      </section>
+
+      <!-- STUDENTS SECTION -->
+      <section id="section-students" class="admin-section hidden">
+        <h2 class="text-xl font-semibold mb-4">Students</h2>
+
+        <input
+          id="studentSearchInput"
+          type="text"
+          placeholder="Search student by name, phone or code..."
+          class="w-full p-2 mb-4 text-black rounded"
+          oninput="filterStudents()"
+        />
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-gray-800 rounded">
+            <thead>
+              <tr class="text-left border-b border-gray-700">
+                <th class="px-4 py-2">#</th>
+                <th class="px-4 py-2">Phone</th>
+                <th class="px-4 py-2">Name</th>
+                <th class="px-4 py-2">Role</th>
+                <th class="px-4 py-2">Login Code</th>
+                <th class="px-4 py-2">Active</th>
+                <th class="px-4 py-2">Course</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody">
+              <!-- JS dynamically fills -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ASSIGN COURSE -->
+      <section id="section-assign" class="admin-section hidden">
+        <h2 class="text-xl font-semibold mb-4">Assign Course</h2>
+
+        <div class="bg-gray-800 p-6 rounded-lg max-w-md space-y-3">
+          <!-- STUDENT SEARCH -->
+          <input
+            id="studentSearch"
+            type="text"
+            placeholder="Search student by phone..."
+            class="w-full p-2 mb-2 text-black rounded"
+            oninput="searchStudents()"
+          />
+
+          <select
+            id="studentSelect"
+            class="w-full p-2 mb-2 text-black rounded"
+          ></select>
+
+          <select
+            id="assignCourseSelect"
+            class="w-full p-2 text-black rounded"
+          ></select>
+
+          <button
+            onclick="assignCourse()"
+            class="bg-purple-600 hover:bg-purple-700 w-full py-2 rounded"
+          >
+            Assign Course
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== RIGHT STICKY NAVBAR ===== -->
+    <aside
+      class="w-64 bg-gray-950 border-l border-gray-800 p-6 sticky top-0 h-screen"
+    >
+      <div class="mb-8 text-center">
+        <!-- LOGO PLACEHOLDER -->
+        <div class="text-xl font-bold">ZIN-NUR</div>
+        <p class="text-xs text-gray-400">Admin Panel</p>
+      </div>
+
+      <nav class="space-y-3 text-sm">
+        <button onclick="showSection('section-add-user')" class="nav-btn">
+          ➕ Add User
+        </button>
+        <button onclick="showSection('section-courses')" class="nav-btn">
+          📚 Courses
+        </button>
+        <button onclick="showSection('section-lessons')" class="nav-btn">
+          🎥 Lessons
+        </button>
+        <button onclick="showSection('section-students')" class="nav-btn">
+          👨‍🎓 Students
+        </button>
+        <button onclick="showSection('section-assign')" class="nav-btn">
+          🔗 Assign Course
+        </button>
+      </nav>
+    </aside>
+
+    <!-- ===== UI SCRIPT ===== -->
+    <script>
+      function showSection(id) {
+        document.querySelectorAll(".admin-section").forEach((sec) => {
+          sec.classList.add("hidden");
+        });
+        document.getElementById(id).classList.remove("hidden");
+      }
+    </script>
+
+    <style>
+      .nav-btn {
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+        border-radius: 8px;
+        background: #111827;
+      }
+      .nav-btn:hover {
+        background: #1f2937;
+      }
+    </style>
+
+    <script type="module" src="./js/admin.js"></script>
+  </body>
+</html>
