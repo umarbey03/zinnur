@@ -19,7 +19,7 @@ if (!userData || userData.role !== "student") {
   location.href = "index.html";
 }
 
-const userId = userData.phone; // Agar users collection da doc ID bo'lsa, uni ishlating
+const userId = userData.phone;
 
 // ==================== ELEMENTLAR ====================
 const sidebar = document.getElementById("sidebar");
@@ -58,9 +58,10 @@ let allCourses = [];
 let currentCourse = null;
 let currentLessons = [];
 let currentLessonIndex = 0;
-let completedLessons = new Set(); // local cache
+let completedLessons = new Set();
 let unsubLessons = null;
 let unsubProgress = null;
+let unsubUser = null;
 
 // ==================== MOBILE SIDEBAR ====================
 sidebarToggle.addEventListener("click", () => {
@@ -74,12 +75,11 @@ sidebarOverlay.addEventListener("click", () => {
 });
 
 // ==================== TALABA ISMI ====================
-const displayName = userData.name || userData.phone || "Talaba";
+let displayName = userData.name || userData.phone || "Talaba";
 welcomeName.textContent = displayName;
 studentName.textContent = displayName;
 
-// ==================== RENDER FUNKSİYALARI (AVVAL E'LON QILINDI) ====================
-
+// ==================== RENDER FUNKSİYALARI ====================
 function renderSidebarCourses(courses) {
   courseList.innerHTML = "";
   courses.forEach((course) => {
@@ -133,49 +133,65 @@ function renderLessons(lessons) {
   });
 }
 
-// ==================== PROGRESS REALTIME ====================
-function loadProgress() {
-  const q = query(collection(db, "progress"), where("userId", "==", userId));
+// ==================== REALTIME USER O‘ZGARISHLARI (YANGI KURS QO‘SHILSA) ====================
+function listenToUserChanges() {
+  const userQuery = query(collection(db, "users"), where("phone", "==", userId));
 
-  unsubProgress = onSnapshot(q, (snap) => {
-    completedLessons.clear();
-    snap.forEach((doc) => {
-      const data = doc.data();
-      completedLessons.add(`${data.courseId}-${data.lessonId}`);
-    });
-
-    completedLessonsEl.textContent = completedLessons.size;
-
-    // Agar dars ochiq bo'lsa – UI yangilansin
-    if (currentLessons.length > 0) {
-      renderLessons(currentLessons); // ✅ belgilarni ko'rsatish uchun
-      updateCompleteButton();
+  getDocs(userQuery).then((snap) => {
+    if (snap.empty) {
+      console.error("User topilmadi");
+      return;
     }
+
+    const userDocRef = snap.docs[0].ref;
+
+    unsubUser = onSnapshot(userDocRef, (docSnap) => {
+      if (!docSnap.exists()) return;
+
+      const updatedData = docSnap.data();
+
+      const newAssigned = updatedData.assignedCourses || [];
+      const oldAssigned = userData.assignedCourses || [];
+
+      if (JSON.stringify(newAssigned.sort()) !== JSON.stringify(oldAssigned.sort())) {
+        userData.assignedCourses = newAssigned;
+        localStorage.setItem("user", JSON.stringify(userData));
+        loadCoursesFromAssigned(newAssigned);
+      }
+
+      const newName = updatedData.name || updatedData.phone || "Talaba";
+      if (newName !== displayName) {
+        displayName = newName;
+        welcomeName.textContent = newName;
+        studentName.textContent = newName;
+      }
+    });
   });
 }
 
-// ==================== KURSLARNI YUKLASH ====================
-async function loadCourses() {
-  if (!userData.assignedCourses || userData.assignedCourses.length === 0) {
+// ==================== KURSLAR YUKLASH (REALTIME) ====================
+async function loadCoursesFromAssigned(assignedIds) {
+  if (!assignedIds || assignedIds.length === 0) {
     noCourses.classList.remove("hidden");
+    allCourses = [];
+    renderSidebarCourses([]);
+    renderOngoingCourses([]);
     totalCourses.textContent = "0";
     totalLessons.textContent = "0";
-    completedLessonsEl.textContent = "0";
     return;
   }
 
   noCourses.classList.add("hidden");
-  totalCourses.textContent = userData.assignedCourses.length;
+  totalCourses.textContent = assignedIds.length;
 
   const snaps = await Promise.all(
-    userData.assignedCourses.map((id) => getDoc(doc(db, "courses", id)))
+    assignedIds.map((id) => getDoc(doc(db, "courses", id)))
   );
 
   allCourses = snaps
     .filter((s) => s.exists())
     .map((s) => ({ id: s.id, ...s.data() }));
 
-  // Umumiy darslar soni
   let lessonCount = 0;
   for (const course of allCourses) {
     const q = query(
@@ -190,8 +206,25 @@ async function loadCourses() {
 
   renderSidebarCourses(allCourses);
   renderOngoingCourses(allCourses);
+}
 
-  loadProgress(); // Progressni oxirgi yuklaymiz
+// ==================== PROGRESS REALTIME ====================
+function loadProgress() {
+  const q = query(collection(db, "progress"), where("userId", "==", userId));
+
+  unsubProgress = onSnapshot(q, (snap) => {
+    completedLessons.clear();
+    snap.forEach((d) => {
+      const data = d.data();
+      completedLessons.add(`${data.courseId}-${data.lessonId}`);
+    });
+    completedLessonsEl.textContent = completedLessons.size;
+
+    if (currentLessons.length > 0) {
+      renderLessons(currentLessons);
+      updateCompleteButton();
+    }
+  });
 }
 
 // ==================== KURS OCHISH ====================
@@ -203,7 +236,7 @@ async function openCourse(course) {
   breadcrumb.classList.remove("hidden");
   breadcrumbText.textContent = course.title;
 
-  // Sidebar active kurs
+  // Sidebar active
   document.querySelectorAll("#courseList button").forEach((btn) => {
     const active = btn.dataset.id === course.id;
     btn.classList.toggle("bg-secondary", active);
@@ -250,7 +283,6 @@ function selectLesson(index) {
   lessonTitle.textContent = lesson.title;
   lessonDesc.textContent = lesson.description || "Izoh yoʻq";
 
-  // YouTube player – YouTube brendingi deyarli yoʻq
   if (lesson.youtubeId) {
     youtubePlayer.src = `https://www.youtube.com/embed/${lesson.youtubeId}?rel=0&modestbranding=1&iv_load_policy=3&color=white&cc_load_policy=0&disablekb=1&fs=1&playsinline=1&controls=1`;
   } else {
@@ -260,7 +292,6 @@ function selectLesson(index) {
   pdfLink.href = lesson.pdfUrl || "#";
   pdfLink.classList.toggle("hidden", !lesson.pdfUrl);
 
-  // Active dars
   document.querySelectorAll("#lessonsList button").forEach((btn, i) => {
     btn.classList.toggle("border-secondary", i === index);
     btn.classList.toggle("bg-light", i === index);
@@ -300,8 +331,6 @@ completeBtn.addEventListener("click", async () => {
       completedAt: serverTimestamp(),
     });
 
-    // UI avto yangilanadi (onSnapshot orqali)
-    // Keyingi darsga o'tish
     if (currentLessonIndex < currentLessons.length - 1) {
       selectLesson(currentLessonIndex + 1);
     }
@@ -321,4 +350,10 @@ courseSearch.addEventListener("input", (e) => {
 });
 
 // ==================== INIT ====================
-loadCourses();
+async function init() {
+  await loadCoursesFromAssigned(userData.assignedCourses || []);
+  loadProgress();
+  listenToUserChanges();
+}
+
+init();

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZIN-NUR Akademiyasi | Talaba paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="./photo/photo_2025-02-26_19-42-27.jpg" />
     <script>
       tailwind.config = {
         theme: {
@@ -115,40 +116,92 @@
             Xush kelibsiz!
           </h2>
 
-          <!-- Stats Cards -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-12">
+          <!-- Stats Cards – Mobile Optimized -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 px-4 sm:px-6 lg:px-0"
+          >
+            <!-- 1. Biriktirilgan kurslar -->
             <div
-              class="bg-white rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition"
+              class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 text-center hover:shadow-2xl hover:-translate-y-1 sm:hover:-translate-y-2 transition-all duration-300 overflow-hidden group"
             >
-              <p
-                class="text-5xl sm:text-6xl font-bold text-secondary"
-                id="totalCourses"
-              >
-                0
-              </p>
-              <p class="text-gray-600 mt-4 text-lg">Biriktirilgan kurslar</p>
+              <div
+                class="absolute -top-8 -left-8 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-purple-400 via-pink-500 to-indigo-500 opacity-10 rounded-full blur-3xl group-hover:opacity-20 transition-all duration-500"
+              ></div>
+
+              <div class="relative z-10">
+                <div
+                  class="w-16 h-16 sm:w-24 sm:h-24 bg-purple-100 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 text-purple-500 shadow-inner"
+                >
+                  <i class="fas fa-book-open text-3xl sm:text-5xl"></i>
+                </div>
+                <p
+                  class="text-4xl sm:text-6xl font-extrabold text-gray-900 dark:text-white"
+                  id="totalCourses"
+                >
+                  0
+                </p>
+                <p
+                  class="text-gray-500 dark:text-gray-300 mt-2 sm:mt-4 text-base sm:text-lg font-medium"
+                >
+                  Biriktirilgan kurslar
+                </p>
+              </div>
             </div>
+
+            <!-- 2. Tugallangan darslar -->
             <div
-              class="bg-white rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition"
+              class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 text-center hover:shadow-2xl hover:-translate-y-1 sm:hover:-translate-y-2 transition-all duration-300 overflow-hidden group"
             >
-              <p
-                class="text-5xl sm:text-6xl font-bold text-secondary"
-                id="completedLessons"
-              >
-                0
-              </p>
-              <p class="text-gray-600 mt-4 text-lg">Tugallangan darslar</p>
+              <div
+                class="absolute -top-8 -right-8 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-green-400 via-teal-400 to-blue-500 opacity-10 rounded-full blur-3xl group-hover:opacity-20 transition-all duration-500"
+              ></div>
+
+              <div class="relative z-10">
+                <div
+                  class="w-16 h-16 sm:w-24 sm:h-24 bg-green-100 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 text-green-500 shadow-inner"
+                >
+                  <i class="fas fa-check-circle text-3xl sm:text-5xl"></i>
+                </div>
+                <p
+                  class="text-4xl sm:text-6xl font-extrabold text-gray-900 dark:text-white"
+                  id="completedLessons"
+                >
+                  0
+                </p>
+                <p
+                  class="text-gray-500 dark:text-gray-300 mt-2 sm:mt-4 text-base sm:text-lg font-medium"
+                >
+                  Tugallangan darslar
+                </p>
+              </div>
             </div>
+
+            <!-- 3. Umumiy darslar -->
             <div
-              class="bg-white rounded-2xl shadow-xl p-8 text-center hover:shadow-2xl transition"
+              class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 sm:p-8 text-center hover:shadow-2xl hover:-translate-y-1 sm:hover:-translate-y-2 transition-all duration-300 overflow-hidden group"
             >
-              <p
-                class="text-5xl sm:text-6xl font-bold text-secondary"
-                id="totalLessons"
-              >
-                0
-              </p>
-              <p class="text-gray-600 mt-4 text-lg">Umumiy darslar</p>
+              <div
+                class="absolute -bottom-8 -left-8 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 opacity-10 rounded-full blur-3xl group-hover:opacity-20 transition-all duration-500"
+              ></div>
+
+              <div class="relative z-10">
+                <div
+                  class="w-16 h-16 sm:w-24 sm:h-24 bg-yellow-100 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 text-yellow-500 shadow-inner"
+                >
+                  <i class="fas fa-play-circle text-3xl sm:text-5xl"></i>
+                </div>
+                <p
+                  class="text-4xl sm:text-6xl font-extrabold text-gray-900 dark:text-white"
+                  id="totalLessons"
+                >
+                  0
+                </p>
+                <p
+                  class="text-gray-500 dark:text-gray-300 mt-2 sm:mt-4 text-base sm:text-lg font-medium"
+                >
+                  Umumiy darslar
+                </p>
+              </div>
             </div>
           </div>
 
@@ -220,12 +273,52 @@
       </main>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer – Primary rang bilan -->
     <footer class="bg-primary text-white py-10 mt-auto">
-      <div class="max-w-7xl mx-auto px-6 text-center">
-        <p class="text-2xl font-bold mb-2">ZIN-NUR Akademiyasi</p>
-        <p class="text-base opacity-90">© 2025 Barcha huquqlar himoyalangan</p>
-        <p class="text-base mt-6 opacity-80">Ilm nuridir ✨</p>
+      <div
+        class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-0 text-center flex flex-col items-center gap-3 sm:gap-4"
+      >
+        <!-- Akademiya nomi -->
+        <p
+          class="text-2xl sm:text-3xl font-extrabold tracking-wide mb-1 sm:mb-2"
+        >
+          ZIN-NUR Akademiyasi
+        </p>
+
+        <!-- Huquqlar -->
+        <p class="text-sm sm:text-base opacity-90">
+          &copy; 2025 Barcha huquqlar himoyalangan
+        </p>
+
+        <!-- Tagline / Motto -->
+        <p class="text-sm sm:text-base mt-2 sm:mt-4 opacity-80 italic">
+          Ilm - bu nur, maskani - ZIN-NUR ✨
+        </p>
+
+        <!-- Social Icons (optional) -->
+        <div class="flex gap-4 mt-4 sm:mt-6">
+          <a
+            href="#"
+            class="hover:text-yellow-300 transition-colors duration-300"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a
+            href="#"
+            class="hover:text-pink-400 transition-colors duration-300"
+          >
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a
+            href="#"
+            class="hover:text-blue-400 transition-colors duration-300"
+          >
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="hover:text-red-500 transition-colors duration-300">
+            <i class="fab fa-youtube"></i>
+          </a>
+        </div>
       </div>
     </footer>
 
